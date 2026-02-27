@@ -1,0 +1,21 @@
+{
+  "title": "ICSS Web Exploitation Sandbox",
+  "description": "Find vulnerabilities in this isolated Flask environment.",
+  "details": {
+    "steps": [
+      {
+        "title": "Hack the Web App",
+        "text": "step1.md"
+      }
+    ],
+    "intro": {
+      "text": "intro.md"
+    },
+    "finish": {
+      "text": "finish.md"
+    }
+  },
+  "backend": {
+    "imageid": "ubuntu"
+  }
+}
