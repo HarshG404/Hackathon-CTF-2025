@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us - ICSS India{% endblock %}
+
+{% block content %}
+<!-- Hero Banner -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8 fade-in-left">
+                <h1 class="display-4 mb-3">Contact Us</h1>
+                <p class="lead">Get in Touch - We're Here to Help</p>
+            </div>
+            <div class="col-md-4 fade-in-right">
+                <div class="text-end">
+                    <i class="fas fa-envelope" style="font-size: 150px; opacity: 0.3;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 fade-in-left">
+                <h2 class="mb-4">Send Us a Message</h2>
+                
+                {% if success %}
+                <div class="alert alert-success fade-in-up">
+                    <i class="fas fa-check-circle me-2"></i>
+                    Thank you for your message! We'll get back to you within 24 hours.
+                </div>
+                {% endif %}
+                
+                <!-- VULN: No CSRF protection -->
+                <form method="POST" action="/contact" class="needs-validation">
+                    <div class="mb-3 fade-in-up">
+                        <label class="form-label"><i class="fas fa-user text-primary"></i> Full Name *</label>
+                        <input type="text" name="name" class="form-control" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="mb-3 fade-in-up stagger-2">
+                        <label class="form-label"><i class="fas fa-envelope text-primary"></i> Email Address *</label>
+                        <input type="email" name="email" class="form-control" placeholder="your.email@example.com" required>
+                    </div>
+                    <div class="mb-3 fade-in-up stagger-3">
+                        <label class="form-label"><i class="fas fa-phone text-primary"></i> Phone Number</label>
+                        <input type="tel" name="phone" class="form-control" placeholder="+91 XXXXX XXXXX">
+                    </div>
+                    <div class="mb-3 fade-in-up stagger-4">
+                        <label class="form-label"><i class="fas fa-tag text-primary"></i> Subject *</label>
+                        <input type="text" name="subject" class="form-control" placeholder="What is this regarding?" required>
+                    </div>
+                    <div class="mb-3 fade-in-up stagger-5">
+                        <label class="form-label"><i class="fas fa-comment-alt text-primary"></i> Message *</label>
+                        <textarea name="message" class="form-control" rows="5" placeholder="Tell us how we can help you..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 fade-in-up stagger-6">
+                        <i class="fas fa-paper-plane me-2"></i>Send Message
+                    </button>
+                </form>
+            </div>
+            
+            <div class="col-md-6 fade-in-right">
+                <h2 class="mb-4">Contact Information</h2>
+                
+                <div class="card mb-4 scale-in">
+                    <div class="card-body">
+                        <h5><i class="fas fa-map-marker-alt text-primary"></i> Our Location</h5>
+                        <p class="mb-0">ICSS, 3rd Floor, Eros Metro Mall<br>
+                        Sector-14, Dwarka, Opposite Metro Station<br>
+                        New Delhi, 110078<br>
+                        India</p>
+                    </div>
+                </div>
+                
+                <div class="card mb-4 scale-in stagger-2">
+                    <div class="card-body">
+                        <h5><i class="fas fa-phone-alt text-primary"></i> Phone Numbers</h5>
+                        <p class="mb-1"><strong>Admissions:</strong> +011-69651424</p>
+                        <p class="mb-1"><strong>Support:</strong> +011-69651425</p>
+                        <p class="mb-0"><strong>Toll Free:</strong> 1800-XXX-XXXX</p>
+                    </div>
+                </div>
+                
+                <div class="card mb-4 scale-in stagger-3">
+                    <div class="card-body">
+                        <h5><i class="fas fa-envelope text-primary"></i> Email</h5>
+                        <p class="mb-1"><strong>General Inquiries:</strong> info@icssindia.in</p>
+                        <p class="mb-1"><strong>Admissions:</strong> admissions@icssindia.in</p>
+                        <p class="mb-0"><strong>Support:</strong> support@icssindia.in</p>
+                    </div>
+                </div>
+                
+                <div class="card scale-in stagger-4">
+                    <div class="card-body">
+                        <h5><i class="fas fa-clock text-primary"></i> Office Hours</h5>
+                        <p class="mb-1"><strong>Monday - Friday:</strong> 9:00 AM - 8:00 PM</p>
+                        <p class="mb-1"><strong>Saturday:</strong> 10:00 AM - 6:00 PM</p>
+                        <p class="mb-0"><strong>Sunday:</strong> Closed</p>
+                    </div>
+                </div>
+
+                <div class="mt-4 text-center scale-in stagger-5">
+                    <h5>Connect With Us</h5>
+                    <div class="d-flex justify-content-center gap-3 mt-3">
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map Section -->
+<section class="py-5 bg-light">
+    <div class="container fade-in-up">
+        <h2 class="section-title text-center mb-4">Find Us on Map</h2>
+        <div class="ratio ratio-21x9">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3502.2088654287186!2d77.04646931508107!3d28.617641982422834!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390d04cc51000001%3A0x8d20d39f0b5c85cd!2sEros%20Metro%20Mall!5e0!3m2!1sen!2sin!4v1234567890123!5m2!1sen!2sin" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5 fade-in-up">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <p class="section-subtitle">Quick answers to common queries</p>
+        </div>
+        <div class="row">
+            <div class="col-md-6 fade-in-left">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5><i class="fas fa-question-circle text-primary"></i> What are the admission requirements?</h5>
+                        <p class="mb-0">Basic computer knowledge and a passion to learn! Some advanced courses may have specific prerequisites.</p>
+                    </div>
+                </div>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5><i class="fas fa-question-circle text-primary"></i> Do you offer placement assistance?</h5>
+                        <p class="mb-0">Yes! We provide 100% placement assistance with resume building, interview prep, and job referrals.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 fade-in-right">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5><i class="fas fa-question-circle text-primary"></i> Can I attend classes online?</h5>
+                        <p class="mb-0">Absolutely! We offer flexible online, offline, and hybrid learning options for all courses.</p>
+                    </div>
+                </div>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5><i class="fas fa-question-circle text-primary"></i> What payment options do you accept?</h5>
+                        <p class="mb-0">We accept all major payment methods including credit/debit cards, UPI, and EMI options.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+<!-- Form has no CSRF protection - vulnerable to CSRF attacks -->
+<!-- Try submitting from a different domain -->

@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Search - ICSS India{% endblock %}
+
+{% block extra_js %}
+{% if xss_flag %}
+<script>
+// Reflected XSS flag - intercept alert and show CTF popup after
+(function() {
+    var _origAlert = window.alert;
+    var _shown = false;
+    var _flag = "{{ xss_flag }}";
+    window.alert = function(msg) {
+        _origAlert.call(window, msg);
+        if (!_shown) {
+            _shown = true;
+            setTimeout(function() {
+                showFlagPopup('xss_reflected', _flag, 'Reflected XSS',
+                    'The search query was reflected in the page without sanitization, allowing script execution!');
+            }, 200);
+        }
+    };
+})();
+// Auto-show flag popup for reflected XSS
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        showFlagPopup(
+            'xss_reflected',
+            "{{ xss_flag }}",
+            'Reflected XSS',
+            'The search query is echoed back into the page unsanitized — classic Reflected XSS!'
+        );
+    }, 300);
+});
+</script>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- Hero Banner -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8 fade-in-left">
+                <h1 class="display-5 mb-3">Search Results</h1>
+                <p class="lead">Find the perfect course for your career goals</p>
+            </div>
+            <div class="col-md-4 fade-in-right text-center">
+                <i class="fas fa-search" style="font-size: 120px; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        {% if query %}
+        <!-- VULN: Reflected XSS - Query is echoed without sanitization -->
+        <div class="alert alert-info fade-in-up">
+            <i class="fas fa-search me-2"></i>
+            Search results for: <strong>{{ query|safe }}</strong>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-12 fade-in-up stagger-2">
+                <form action="/search" method="GET" class="input-group input-group-lg">
+                    <input type="text" name="q" class="form-control" placeholder="Refine your search..." value="{{ query }}">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search me-2"></i>Search Again
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-3">
+            {% if results %}
+            <div class="col-12 fade-in-up">
+                <p class="text-muted">Found {{ results|length }} course(s) matching your search</p>
+            </div>
+            {% for course in results %}
+            <div class="col-md-6 fade-in-up stagger-{{ loop.index % 6 + 1 }}">
+                <div class="card course-card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start mb-3">
+                            <i class="fas fa-book fa-3x text-primary me-3"></i>
+                            <div>
+                                <h5 class="mb-1">{{ course.name }}</h5>
+                                <div class="mb-2">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <small class="text-muted">(4.8/5)</small>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-muted">{{ course.description }}</p>
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i> {{ course.duration }} |
+                                <i class="fas fa-user-tie me-1"></i> {{ course.instructor }}
+                            </small>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 text-primary mb-0">₹{{ course.price }}</span>
+                            <a href="/course/{{ course.id }}" class="btn btn-primary">
+                                View Details <i class="fas fa-arrow-right ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="col-12">
+                <div class="card text-center py-5 fade-in-up">
+                    <div class="card-body">
+                        <i class="fas fa-search fa-4x text-muted mb-3"></i>
+                        <h4>No results found for "{{ query|safe }}"</h4>
+                        <p class="text-muted">Try different keywords or browse all courses</p>
+                        <a href="/courses" class="btn btn-primary mt-3">
+                            <i class="fas fa-book me-2"></i>Browse All Courses
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="card text-center py-5 fade-in-up">
+            <div class="card-body">
+                <i class="fas fa-search fa-4x text-primary mb-3"></i>
+                <h3>Search for Courses</h3>
+                <p class="lead text-muted">Enter a keyword to find your perfect course</p>
+                <form action="/search" method="GET" class="mt-4">
+                    <div class="row justify-content-center">
+                        <div class="col-md-6">
+                            <div class="input-group input-group-lg">
+                                <input type="text" name="q" class="form-control" placeholder="e.g., Python, AI, Cyber Security..." required>
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Popular Searches -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-4 fade-in-up">
+            <h3 class="section-title">Popular Searches</h3>
+        </div>
+        <div class="text-center fade-in-up stagger-2">
+            <a href="/search?q=Python" class="btn btn-outline-primary m-2">Python</a>
+            <a href="/search?q=AI" class="btn btn-outline-primary m-2">Artificial Intelligence</a>
+            <a href="/search?q=Cyber" class="btn btn-outline-primary m-2">Cyber Security</a>
+            <a href="/search?q=Cloud" class="btn btn-outline-primary m-2">Cloud Computing</a>
+            <a href="/search?q=Data" class="btn btn-outline-primary m-2">Data Science</a>
+            <a href="/search?q=Web" class="btn btn-outline-primary m-2">Web Development</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
