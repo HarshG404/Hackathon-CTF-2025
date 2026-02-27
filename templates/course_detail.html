@@ -1,0 +1,365 @@
+{% extends "base.html" %}
+
+{% block title %}{{ course.name }} - ICSS India{% endblock %}
+
+{% block extra_js %}
+{% if xss_stored_flag %}
+<script>
+// The student injected a stored XSS payload.
+// We intercept the native alert() so that after it runs,
+// we show the CTF flag popup automatically.
+(function() {
+    var _origAlert = window.alert;
+    var _flagShown = false;
+    var _xssFlag = "{{ xss_stored_flag }}";
+
+    window.alert = function(msg) {
+        // Call the real alert first
+        _origAlert.call(window, msg);
+        // After OK is pressed, show the CTF flag popup (only once)
+        if (!_flagShown) {
+            _flagShown = true;
+            setTimeout(function() {
+                showFlagPopup(
+                    'xss_stored',
+                    _xssFlag,
+                    'Stored XSS',
+                    'Your JavaScript payload was stored in the database and executed when the page loaded — classic Stored XSS!'
+                );
+            }, 200);
+        }
+    };
+
+    // Also intercept confirm/prompt in case student uses those
+    var _origConfirm = window.confirm;
+    window.confirm = function(msg) {
+        var result = _origConfirm.call(window, msg);
+        if (!_flagShown) {
+            _flagShown = true;
+            setTimeout(function() {
+                showFlagPopup('xss_stored', _xssFlag, 'Stored XSS',
+                    'Your JavaScript payload was stored and executed — classic Stored XSS!');
+            }, 200);
+        }
+        return result;
+    };
+})();
+</script>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- Course Hero Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8 fade-in-left">
+                <h1 class="display-5 mb-3">{{ course.name }}</h1>
+                <p class="lead">{{ course.description }}</p>
+                <div class="d-flex flex-wrap gap-3 mt-4">
+                    <div class="badge bg-warning text-dark p-2">
+                        <i class="fas fa-star"></i> 4.8/5 Rating
+                    </div>
+                    <div class="badge bg-light text-dark p-2">
+                        <i class="fas fa-users"></i> 1,245 Students Enrolled
+                    </div>
+                    <div class="badge bg-light text-dark p-2">
+                        <i class="fas fa-certificate"></i> Certification Included
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 fade-in-right text-center">
+                <i class="fas fa-graduation-cap" style="font-size: 150px; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <!-- Course Details Card -->
+                <div class="card mb-4 fade-in-left">
+                    <div class="card-body">
+                        <h3><i class="fas fa-info-circle text-primary"></i> Course Overview</h3>
+                        <p class="lead">{{ course.description }}</p>
+                        <p>This comprehensive course is designed to take you from beginner to expert level. You'll gain hands-on experience with real-world projects and industry-standard tools.</p>
+                    </div>
+                </div>
+
+                <!-- What You'll Learn -->
+                <div class="card mb-4 fade-in-left stagger-2">
+                    <div class="card-body">
+                        <h3><i class="fas fa-check-circle text-success"></i> What You'll Learn</h3>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Industry best practices and standards</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Hands-on project implementation</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Real-world case studies</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Advanced techniques and tools</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Problem-solving strategies</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Industry certification prep</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Career development guidance</li>
+                                    <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Portfolio building projects</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course Details -->
+                <div class="card mb-4 fade-in-left stagger-3">
+                    <div class="card-body">
+                        <h3><i class="fas fa-list text-primary"></i> Course Details</h3>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li class="mb-3">
+                                        <i class="fas fa-clock text-primary me-2"></i>
+                                        <strong>Duration:</strong> {{ course.duration }}
+                                    </li>
+                                    <li class="mb-3">
+                                        <i class="fas fa-user-tie text-primary me-2"></i>
+                                        <strong>Instructor:</strong> {{ course.instructor }}
+                                    </li>
+                                    <li class="mb-3">
+                                        <i class="fas fa-tag text-primary me-2"></i>
+                                        <strong>Category:</strong> {{ course.category }}
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-unstyled">
+                                    <li class="mb-3">
+                                        <i class="fas fa-level-up-alt text-primary me-2"></i>
+                                        <strong>Level:</strong> Beginner to Advanced
+                                    </li>
+                                    <li class="mb-3">
+                                        <i class="fas fa-language text-primary me-2"></i>
+                                        <strong>Language:</strong> English &amp; Hindi
+                                    </li>
+                                    <li class="mb-3">
+                                        <i class="fas fa-certificate text-primary me-2"></i>
+                                        <strong>Certificate:</strong> Yes, on completion
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reviews Section - VULN: Stored XSS (per-user isolated) -->
+                <div class="card fade-in-left stagger-4">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0"><i class="fas fa-comments"></i> Student Reviews</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if session.user_id %}
+                        <div class="mb-4">
+                            <h5>Write a Review</h5>
+                            <div class="alert alert-warning py-2 mb-3" style="font-size:12px;">
+                                <i class="fas fa-bug me-1"></i>
+                                <strong>CTF Hint:</strong> This form has a Stored XSS vulnerability. Your reviews are stored and rendered without sanitization!
+                            </div>
+                            <form method="POST" action="/course/{{ course.id }}/review">
+                                <div class="mb-3">
+                                    <label class="form-label">Rating</label>
+                                    <select name="rating" class="form-select" required>
+                                        <option value="5">⭐⭐⭐⭐⭐ Excellent (5 Stars)</option>
+                                        <option value="4">⭐⭐⭐⭐ Very Good (4 Stars)</option>
+                                        <option value="3">⭐⭐⭐ Good (3 Stars)</option>
+                                        <option value="2">⭐⭐ Fair (2 Stars)</option>
+                                        <option value="1">⭐ Poor (1 Star)</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Your Review</label>
+                                    <!-- VULN: No sanitization - Stored XSS -->
+                                    <textarea name="comment" class="form-control" rows="4"
+                                        placeholder="Share your experience... (try: &lt;script&gt;alert('XSS')&lt;/script&gt;)" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane me-2"></i>Submit Review
+                                </button>
+                            </form>
+                        </div>
+                        {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <a href="/login" class="alert-link">Login</a> to write a review.
+                        </div>
+                        {% endif %}
+
+                        <hr class="my-4">
+
+                        <h5 class="mb-4">All Reviews <small class="text-muted fs-6">(Your personal session)</small></h5>
+                        {% for review in reviews %}
+                        <div class="border-bottom mb-4 pb-4 fade-in-up">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="fas fa-user-circle fa-2x text-primary me-3"></i>
+                                <div>
+                                    <strong>{{ review.username }}</strong>
+                                    <div>
+                                        {% for i in range(review.rating) %}
+                                        <i class="fas fa-star text-warning"></i>
+                                        {% endfor %}
+                                        {% for i in range(5 - review.rating) %}
+                                        <i class="far fa-star text-warning"></i>
+                                        {% endfor %}
+                                        <small class="text-muted ms-2">({{ review.created_at }})</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- VULN: Review comment is not sanitized - Stored XSS -->
+                            <p class="ms-5">{{ review.comment|safe }}</p>
+                        </div>
+                        {% endfor %}
+
+                        {% if not reviews %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-comments fa-3x mb-3"></i>
+                            <p>No reviews yet. Be the first to review this course!<br>
+                            <small class="text-danger">Try injecting a script tag in your review...</small></p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <!-- Enrollment Card -->
+                <div class="card mb-4 shadow-lg fade-in-right sticky-top" style="top: 100px;">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0"><i class="fas fa-graduation-cap"></i> Enroll Now</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if session.user_id %}
+                        <form method="POST" action="/enroll/{{ course.id }}">
+                            <!-- VULN: Price from client-side - can be tampered -->
+                            <input type="hidden" name="price" value="{{ course.price }}">
+                            <input type="hidden" name="discount" value="0">
+
+                            <div class="text-center mb-4">
+                                <h2 class="text-primary mb-0">₹{{ course.price }}</h2>
+                                <p class="text-muted"><del>₹{{ (course.price * 1.5)|int }}</del> <span class="badge bg-success">33% OFF</span></p>
+                            </div>
+
+                            <div class="alert alert-warning">
+                                <i class="fas fa-fire me-2"></i>
+                                <strong>Limited Time Offer!</strong><br>
+                                Special discount ends in 3 days
+                            </div>
+
+                            <ul class="list-unstyled mb-4">
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Lifetime Access</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Certificate of Completion</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Downloadable Resources</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> 24/7 Student Support</li>
+                                <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Money-back Guarantee</li>
+                            </ul>
+
+                            <button type="submit" class="btn btn-success btn-lg w-100 mb-2">
+                                <i class="fas fa-shopping-cart me-2"></i>Enroll Now
+                            </button>
+                        </form>
+                        {% else %}
+                        <p class="text-center"><a href="/login" class="btn btn-primary w-100">Login to Enroll</a></p>
+                        {% endif %}
+
+                        <hr class="my-4">
+                        <div class="text-center">
+                            <p class="mb-2"><i class="fas fa-shield-alt text-success"></i> 30-Day Money-Back Guarantee</p>
+                            <p class="mb-0"><i class="fas fa-users text-primary"></i> Join 1,245 students already enrolled</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course Features -->
+                <div class="card mb-4 fade-in-right stagger-2">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="fas fa-list-check text-primary"></i> This Course Includes</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i class="fas fa-video text-primary me-2"></i> 50+ Hours of Video Content</li>
+                            <li class="mb-2"><i class="fas fa-file-alt text-primary me-2"></i> Downloadable Resources</li>
+                            <li class="mb-2"><i class="fas fa-infinity text-primary me-2"></i> Lifetime Access</li>
+                            <li class="mb-2"><i class="fas fa-mobile-alt text-primary me-2"></i> Access on Mobile &amp; Desktop</li>
+                            <li class="mb-2"><i class="fas fa-certificate text-primary me-2"></i> Certificate of Completion</li>
+                            <li class="mb-2"><i class="fas fa-headset text-primary me-2"></i> Live Q&amp;A Sessions</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Instructor Info -->
+                <div class="card fade-in-right stagger-3">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="fas fa-chalkboard-teacher text-primary"></i> Your Instructor</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <i class="fas fa-user-circle fa-5x text-primary mb-3"></i>
+                        <h5>{{ course.instructor }}</h5>
+                        <p class="text-muted">Senior {{ course.category }} Expert</p>
+                        <div class="mb-3">
+                            <small class="d-block"><i class="fas fa-star text-warning"></i> 4.9 Instructor Rating</small>
+                            <small class="d-block"><i class="fas fa-users text-primary"></i> 5,000+ Students</small>
+                            <small class="d-block"><i class="fas fa-play-circle text-primary"></i> 15 Courses</small>
+                        </div>
+                        <a href="#" class="btn btn-outline-primary btn-sm">View Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Courses -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5 fade-in-up">
+            <h2 class="section-title">Related Courses</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4 fade-in-up">
+                <div class="card course-card h-100">
+                    <div class="card-body">
+                        <i class="fas fa-brain fa-3x text-primary mb-3"></i>
+                        <h5>Advanced Machine Learning</h5>
+                        <p>Deep dive into neural networks and AI algorithms</p>
+                        <a href="#" class="btn btn-primary w-100">View Course</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 fade-in-up stagger-2">
+                <div class="card course-card h-100">
+                    <div class="card-body">
+                        <i class="fas fa-cloud fa-3x text-primary mb-3"></i>
+                        <h5>AWS Solutions Architect</h5>
+                        <p>Master cloud infrastructure on Amazon Web Services</p>
+                        <a href="#" class="btn btn-primary w-100">View Course</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 fade-in-up stagger-3">
+                <div class="card course-card h-100">
+                    <div class="card-body">
+                        <i class="fas fa-code fa-3x text-primary mb-3"></i>
+                        <h5>Full Stack Web Development</h5>
+                        <p>Build modern web applications with React and Node.js</p>
+                        <a href="#" class="btn btn-primary w-100">View Course</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+<!-- Reviews are stored per-user session - XSS only affects the attacking user -->
+<!-- Enrollment form price can be manipulated via DevTools -->

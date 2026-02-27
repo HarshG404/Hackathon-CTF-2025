@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block title %}Register - ICSS India{% endblock %}
+
+{% block extra_js %}
+{% if flag %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        showFlagPopup(
+            'privilege_escalation',
+            "{{ flag }}",
+            'Privilege Escalation',
+            'You manipulated the hidden "role" field to register as admin! The server accepted the client-supplied role parameter.'
+        );
+    }, 400);
+});
+</script>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 fade-in-up">
+                <div class="card shadow-lg">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-user-plus fa-5x text-primary mb-3"></i>
+                            <h2>Student Registration</h2>
+                            <p class="text-muted">Join thousands of successful tech professionals</p>
+                        </div>
+
+                        {% if error %}
+                        <div class="alert alert-danger fade-in-up">
+                            <i class="fas fa-exclamation-circle me-2"></i>{{ error }}
+                        </div>
+                        {% endif %}
+
+                        {% if success %}
+                        <div class="alert alert-success fade-in-up">
+                            <i class="fas fa-check-circle me-2"></i>
+                            Registration successful!
+                            {% if flag %}
+                            <br><strong class="text-success font-monospace">FLAG: {{ flag }}</strong>
+                            {% endif %}
+                            <br><a href="/login" class="alert-link">Click here to login</a>
+                        </div>
+                        {% endif %}
+
+                        <form method="POST" action="/register">
+                            <div class="mb-3 fade-in-up">
+                                <label class="form-label"><i class="fas fa-user text-primary"></i> Username *</label>
+                                <input type="text" name="username" class="form-control form-control-lg"
+                                    placeholder="Choose a unique username" required>
+                            </div>
+                            <div class="mb-3 fade-in-up stagger-2">
+                                <label class="form-label"><i class="fas fa-envelope text-primary"></i> Email Address *</label>
+                                <input type="email" name="email" class="form-control form-control-lg"
+                                    placeholder="your.email@example.com" required>
+                            </div>
+                            <div class="mb-3 fade-in-up stagger-3">
+                                <label class="form-label"><i class="fas fa-phone text-primary"></i> Phone Number</label>
+                                <input type="tel" name="phone" class="form-control form-control-lg"
+                                    placeholder="+91 XXXXX XXXXX">
+                            </div>
+                            <div class="mb-3 fade-in-up stagger-4">
+                                <label class="form-label"><i class="fas fa-lock text-primary"></i> Password *</label>
+                                <input type="password" name="password" class="form-control form-control-lg"
+                                    placeholder="Create a strong password" required>
+                            </div>
+                            <div class="mb-3 fade-in-up stagger-5">
+                                <label class="form-label"><i class="fas fa-lock text-primary"></i> Confirm Password *</label>
+                                <input type="password" name="confirm_password" class="form-control form-control-lg"
+                                    placeholder="Re-enter your password" required>
+                            </div>
+
+                            <!-- VULN: Hidden role field - can be manipulated via DevTools / Burp -->
+                            <input type="hidden" name="role" value="student">
+
+                            <div class="mb-3 fade-in-up stagger-6">
+                                <label class="form-label"><i class="fas fa-graduation-cap text-primary"></i> Interested Course</label>
+                                <select name="interested_course" class="form-select form-select-lg">
+                                    <option value="">Select a course</option>
+                                    <option value="ai">Artificial Intelligence</option>
+                                    <option value="cybersecurity">Cyber Security</option>
+                                    <option value="cloud">Cloud Computing</option>
+                                    <option value="datascience">Data Science</option>
+                                    <option value="fullstack">Full Stack Development</option>
+                                    <option value="devops">DevOps</option>
+                                </select>
+                            </div>
+
+                            <div class="form-check mb-3 fade-in-up stagger-7">
+                                <input type="checkbox" class="form-check-input" id="terms" required>
+                                <label class="form-check-label" for="terms">
+                                    I agree to the <a href="#" class="text-primary">Terms &amp; Conditions</a>
+                                </label>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg w-100 fade-in-up stagger-9">
+                                <i class="fas fa-user-plus me-2"></i>Create My Account
+                            </button>
+                        </form>
+
+                        <hr class="my-4">
+                        <div class="text-center fade-in-up">
+                            <p>Already have an account?
+                                <a href="/login" class="text-primary fw-bold">Login here</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+<!-- Form can be manipulated to change role parameter -->
+<!-- Try inspecting the form and modifying hidden fields -->

@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="ICSS India - Premier Educational Institute for IT Training, Cyber Security, AI, Cloud Computing">
+    <title>{% block title %}ICSS India - Education & IT Training Institute{% endblock %}</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        /* ===== CTF FLAG SIDEBAR ===== */
+        #ctf-sidebar {
+            position: fixed;
+            top: 0;
+            right: -360px;
+            width: 360px;
+            height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            z-index: 9999;
+            transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: -4px 0 30px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        #ctf-sidebar.open { right: 0; }
+
+        #ctf-toggle-btn {
+            position: fixed;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            z-index: 10000;
+            background: linear-gradient(135deg, #e94560, #c62a47);
+            color: white;
+            border: none;
+            border-radius: 12px 0 0 12px;
+            padding: 14px 10px;
+            cursor: pointer;
+            box-shadow: -3px 0 15px rgba(233,69,96,0.5);
+            transition: all 0.3s ease;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        #ctf-toggle-btn:hover { background: linear-gradient(135deg, #c62a47, #a01e35); padding: 16px 12px; }
+        #ctf-toggle-btn .flag-count-badge {
+            display: block;
+            background: #ffd700;
+            color: #000;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            line-height: 22px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 800;
+            margin: 6px auto 0;
+            writing-mode: horizontal-tb;
+        }
+
+        .ctf-sidebar-header {
+            background: rgba(233,69,96,0.15);
+            border-bottom: 1px solid rgba(233,69,96,0.3);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .ctf-sidebar-header h5 {
+            color: #e94560;
+            margin: 0;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        .ctf-sidebar-close {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 1.3rem;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+        .ctf-sidebar-close:hover { color: #fff; }
+
+        .ctf-sidebar-stats {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            gap: 12px;
+        }
+        .ctf-stat-box {
+            flex: 1;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+        }
+        .ctf-stat-box .num { color: #ffd700; font-size: 1.5rem; font-weight: 800; }
+        .ctf-stat-box .lbl { color: #aaa; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .ctf-flags-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 15px;
+        }
+        .ctf-flags-list::-webkit-scrollbar { width: 4px; }
+        .ctf-flags-list::-webkit-scrollbar-thumb { background: rgba(233,69,96,0.4); border-radius: 2px; }
+
+        .ctf-flag-item {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-left: 3px solid #e94560;
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            animation: slideInRight 0.3s ease;
+        }
+        .ctf-flag-item .flag-label {
+            color: #e94560;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .ctf-flag-item .flag-value {
+            color: #ffd700;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            word-break: break-all;
+            margin-top: 3px;
+        }
+        .ctf-flag-item .flag-time {
+            color: #666;
+            font-size: 10px;
+            margin-top: 3px;
+        }
+
+        .ctf-empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #555;
+        }
+        .ctf-empty-state i { font-size: 3rem; margin-bottom: 12px; color: #333; }
+        .ctf-empty-state p { font-size: 13px; line-height: 1.6; }
+
+        @keyframes slideInRight {
+            from { transform: translateX(20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* ===== FLAG POPUP MODAL ===== */
+        #flag-popup-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            z-index: 99999;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+        #flag-popup-overlay.show { display: flex; }
+
+        #flag-popup-box {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 2px solid #e94560;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 480px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(233,69,96,0.4), 0 0 0 1px rgba(255,215,0,0.1);
+            animation: popupAppear 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+        #flag-popup-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at center, rgba(233,69,96,0.08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        @keyframes popupAppear {
+            from { transform: scale(0.7) translateY(30px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .flag-popup-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #e94560, #c62a47);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 1.8rem;
+            box-shadow: 0 8px 25px rgba(233,69,96,0.5);
+        }
+        .flag-popup-title {
+            color: #ffd700;
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+        .flag-popup-vuln {
+            color: #e94560;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+        .flag-popup-value {
+            background: rgba(255,215,0,0.08);
+            border: 1px solid rgba(255,215,0,0.2);
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #ffd700;
+            word-break: break-all;
+            margin-bottom: 24px;
+            position: relative;
+        }
+        .flag-copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(255,215,0,0.15);
+            border: none;
+            color: #ffd700;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+        .flag-copy-btn:hover { background: rgba(255,215,0,0.3); }
+        .flag-popup-desc { color: #aaa; font-size: 13px; margin-bottom: 24px; line-height: 1.6; }
+        .flag-popup-close-btn {
+            background: linear-gradient(135deg, #e94560, #c62a47);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 32px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(233,69,96,0.4);
+        }
+        .flag-popup-close-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(233,69,96,0.6);
+        }
+        .confetti-container {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            pointer-events: none;
+        }
+
+        /* Sidebar overlay */
+        #ctf-sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 9998;
+        }
+        #ctf-sidebar-overlay.show { display: block; }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <!-- Loading Screen -->
+    <div class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Floating Background Shapes -->
+    <div class="parallax-layer">
+        <div class="floating-shape floating-shape-1"></div>
+        <div class="floating-shape floating-shape-2"></div>
+        <div class="floating-shape floating-shape-3"></div>
+    </div>
+
+    <!-- ===== CTF SIDEBAR TOGGLE BUTTON ===== -->
+    <button id="ctf-toggle-btn" onclick="toggleCTFSidebar()" title="View Found Flags">
+        🚩 FLAGS
+        <span class="flag-count-badge" id="sidebar-flag-count">0</span>
+    </button>
+
+    <!-- CTF Sidebar Overlay -->
+    <div id="ctf-sidebar-overlay" onclick="closeCTFSidebar()"></div>
+
+    <!-- ===== CTF SIDEBAR ===== -->
+    <div id="ctf-sidebar">
+        <div class="ctf-sidebar-header">
+            <h5><i class="fas fa-flag me-2"></i>My CTF Flags</h5>
+            <button class="ctf-sidebar-close" onclick="closeCTFSidebar()">✕</button>
+        </div>
+        <div class="ctf-sidebar-stats">
+            <div class="ctf-stat-box">
+                <div class="num" id="stats-found">0</div>
+                <div class="lbl">Found</div>
+            </div>
+            <div class="ctf-stat-box">
+                <div class="num">34</div>
+                <div class="lbl">Total</div>
+            </div>
+            <div class="ctf-stat-box">
+                <div class="num" id="stats-pct">0%</div>
+                <div class="lbl">Progress</div>
+            </div>
+        </div>
+        <div class="ctf-flags-list" id="ctf-flags-list">
+            <div class="ctf-empty-state" id="ctf-empty-msg">
+                <i class="fas fa-search"></i>
+                <p>No flags found yet.<br>Start exploring the site<br>to discover vulnerabilities!</p>
+            </div>
+        </div>
+        <div style="padding: 12px 15px; border-top: 1px solid rgba(255,255,255,0.08); text-align: center;">
+            <small style="color: #555; font-size: 10px;">🔒 Your flags are private to your session</small>
+        </div>
+    </div>
+
+    <!-- ===== FLAG POPUP MODAL ===== -->
+    <div id="flag-popup-overlay">
+        <div id="flag-popup-box">
+            <div class="confetti-container" id="confetti-container"></div>
+            <div class="flag-popup-icon">🚩</div>
+            <div class="flag-popup-title">🎉 Flag Captured!</div>
+            <div class="flag-popup-vuln" id="popup-vuln-name"></div>
+            <div class="flag-popup-value" id="popup-flag-value">
+                <span id="popup-flag-text"></span>
+                <button class="flag-copy-btn" onclick="copyFlag()">Copy</button>
+            </div>
+            <div class="flag-popup-desc" id="popup-flag-desc">Congratulations! You've successfully exploited this vulnerability.</div>
+            <button class="flag-popup-close-btn" onclick="closeFlagPopup()">
+                <i class="fas fa-check me-2"></i>Awesome! Continue Hacking
+            </button>
+        </div>
+    </div>
+
+    <!-- Top Strip -->
+    <div class="top-strip">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="contact-info">
+                        <i class="fas fa-phone-alt"></i> +011-69651424
+                        <i class="fas fa-envelope ms-3"></i> info@icssindia.in
+                    </div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="social-icons">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <strong style="color:#003366; font-size:1.4rem;">ICSS India</strong>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/about">About Us</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/courses">Courses</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+                    {% if session.user_id %}
+                    <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
+                    {% if session.role == 'admin' %}
+                    <li class="nav-item"><a class="nav-link text-danger fw-bold" href="/admin">Admin Panel</a></li>
+                    {% endif %}
+                    {% endif %}
+                </ul>
+                <div class="d-flex align-items-center gap-2">
+                    <form action="/search" method="GET" class="me-1">
+                        <input type="text" name="q" placeholder="Search..." class="form-control form-control-sm" style="width:150px;">
+                    </form>
+                    {% if session.user_id %}
+                    <span class="text-muted small">{{ session.username }}</span>
+                    <a href="/logout" class="btn btn-outline-secondary btn-sm">Logout</a>
+                    {% else %}
+                    <a href="/login" class="btn btn-primary btn-sm">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="footer-widget">
+                        <strong style="color:#fff; font-size:1.3rem;">ICSS India</strong>
+                        <p class="mt-2">Leading IT Training &amp; Certification Institute providing world-class education in emerging technologies since 2010.</p>
+                        <div class="footer-contact mt-3">
+                            <p><i class="fas fa-map-marker-alt"></i> ICSS, 3rd Floor, Eros Metro Mall, Sec-14, Dwarka, Delhi, 110078</p>
+                            <p><i class="fas fa-phone-alt"></i> +011-69651424</p>
+                            <p><i class="fas fa-envelope"></i> info@icssindia.in</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6">
+                    <div class="footer-widget">
+                        <h4>Quick Links</h4>
+                        <ul class="footer-links">
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/about">About Us</a></li>
+                            <li><a href="/courses">Courses</a></li>
+                            <li><a href="/contact">Contact</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="footer-widget">
+                        <h4>Popular Courses</h4>
+                        <ul class="footer-links">
+                            <li><a href="/courses">Generative AI &amp; ChatGPT</a></li>
+                            <li><a href="/courses">Cyber Security Specialist</a></li>
+                            <li><a href="/courses">Cloud Computing (AWS/Azure)</a></li>
+                            <li><a href="/courses">Data Science &amp; Analytics</a></li>
+                            <li><a href="/courses">Full Stack Development</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="footer-widget">
+                        <h4>CTF Challenge</h4>
+                        <p>This site contains intentional security vulnerabilities for educational CTF training. Find all 34 flags!</p>
+                        <button class="btn btn-sm mt-2" style="background:#e94560; color:white;" onclick="toggleCTFSidebar()">
+                            <i class="fas fa-flag me-1"></i> View My Flags
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom mt-4">
+                <div class="row align-items-center">
+                    <div class="col-md-6 text-center text-md-start">
+                        <p>&copy; 2026 ICSS India. All Rights Reserved.</p>
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                        <a href="#">Privacy Policy</a> |
+                        <a href="#">Terms &amp; Conditions</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <button id="scrollTopBtn" class="scroll-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+
+    <script>
+    // ===== CTF FLAG SYSTEM =====
+
+    // Server-side pending flag (from Flask session)
+    {% if pending_flag %}
+    window.__pendingFlag = {
+        key: "{{ pending_flag.key }}",
+        value: "{{ pending_flag.value }}",
+        label: "{{ pending_flag.label }}"
+    };
+    {% else %}
+    window.__pendingFlag = null;
+    {% endif %}
+
+    // Initialize found flags from server
+    {% if found_flags %}
+    window.__foundFlags = {{ found_flags | tojson }};
+    {% else %}
+    window.__foundFlags = {};
+    {% endif %}
+
+    // ---- Sidebar ----
+    function toggleCTFSidebar() {
+        document.getElementById('ctf-sidebar').classList.toggle('open');
+        document.getElementById('ctf-sidebar-overlay').classList.toggle('show');
+        refreshFlagsSidebar();
+    }
+
+    function closeCTFSidebar() {
+        document.getElementById('ctf-sidebar').classList.remove('open');
+        document.getElementById('ctf-sidebar-overlay').classList.remove('show');
+    }
+
+    function refreshFlagsSidebar() {
+        fetch('/api/my-flags')
+            .then(r => r.json())
+            .then(data => {
+                window.__foundFlags = {};
+                data.flags.forEach(f => { window.__foundFlags[f.key] = f; });
+                renderFlagsSidebar(data.flags);
+            });
+    }
+
+    function renderFlagsSidebar(flags) {
+        const list = document.getElementById('ctf-flags-list');
+        const emptyMsg = document.getElementById('ctf-empty-msg');
+        const countBadge = document.getElementById('sidebar-flag-count');
+        const statsFound = document.getElementById('stats-found');
+        const statsPct = document.getElementById('stats-pct');
+
+        countBadge.textContent = flags.length;
+        statsFound.textContent = flags.length;
+        statsPct.textContent = Math.round((flags.length / 34) * 100) + '%';
+
+        if (flags.length === 0) {
+            emptyMsg.style.display = 'block';
+            // Clear old items
+            Array.from(list.querySelectorAll('.ctf-flag-item')).forEach(el => el.remove());
+            return;
+        }
+        emptyMsg.style.display = 'none';
+
+        // Build fresh list
+        Array.from(list.querySelectorAll('.ctf-flag-item')).forEach(el => el.remove());
+        flags.slice().reverse().forEach(flag => {
+            const item = document.createElement('div');
+            item.className = 'ctf-flag-item';
+            item.innerHTML = `
+                <div class="flag-label">✅ ${flag.label || flag.key}</div>
+                <div class="flag-value">${flag.value}</div>
+                <div class="flag-time">Found at ${flag.time || '--:--'}</div>
+            `;
+            list.insertBefore(item, list.firstChild.nextSibling || null);
+        });
+    }
+
+    // ---- Flag Popup ----
+    function showFlagPopup(key, value, label, desc) {
+        document.getElementById('popup-vuln-name').textContent = label || key;
+        document.getElementById('popup-flag-text').textContent = value;
+        document.getElementById('popup-flag-desc').textContent = desc || 'You successfully exploited this vulnerability!';
+        document.getElementById('flag-popup-overlay').classList.add('show');
+        spawnConfetti();
+        // Update sidebar count
+        setTimeout(refreshFlagsSidebar, 300);
+    }
+
+    function closeFlagPopup() {
+        document.getElementById('flag-popup-overlay').classList.remove('show');
+    }
+
+    function copyFlag() {
+        const text = document.getElementById('popup-flag-text').textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            const btn = document.querySelector('.flag-copy-btn');
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy', 1500);
+        });
+    }
+
+    // Global function for XSS injection to trigger flag popup
+    // Students can call this from their XSS payloads too
+    window.CTF_showFlag = function(key, value, label) {
+        showFlagPopup(key, value, label);
+    };
+
+    // ---- Confetti ----
+    function spawnConfetti() {
+        const container = document.getElementById('confetti-container');
+        container.innerHTML = '';
+        const colors = ['#e94560','#ffd700','#00d4ff','#7fff00','#ff6b35'];
+        for (let i = 0; i < 30; i++) {
+            const piece = document.createElement('div');
+            piece.style.cssText = `
+                position: absolute;
+                width: ${4 + Math.random() * 6}px;
+                height: ${8 + Math.random() * 10}px;
+                background: ${colors[Math.floor(Math.random() * colors.length)]};
+                top: 0;
+                left: ${Math.random() * 100}%;
+                border-radius: 2px;
+                animation: confettiFall ${1.5 + Math.random() * 2}s ease-out ${Math.random() * 0.5}s forwards;
+                transform: rotate(${Math.random() * 360}deg);
+            `;
+            container.appendChild(piece);
+        }
+    }
+
+    // Inject confetti animation styles
+    if (!document.getElementById('confetti-styles')) {
+        const style = document.createElement('style');
+        style.id = 'confetti-styles';
+        style.textContent = `
+            @keyframes confettiFall {
+                from { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+                to   { transform: translateY(300px) rotate(720deg); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    // ---- On Page Load: show pending flag ----
+    document.addEventListener('DOMContentLoaded', function() {
+        // Load sidebar counts
+        refreshFlagsSidebar();
+
+        // Show pending server-side flag popup
+        if (window.__pendingFlag) {
+            setTimeout(function() {
+                showFlagPopup(
+                    window.__pendingFlag.key,
+                    window.__pendingFlag.value,
+                    window.__pendingFlag.label
+                );
+            }, 600);
+        }
+    });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+<!-- Development Note: SQL Query Debugger Enabled -->
+<!-- TODO: Remove debug comments before production -->
+<!-- FLAG: FLAG{HTML_C0mm3nt_H1dd3n_Fl4g} -->
+</html>

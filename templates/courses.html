@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block title %}Courses - ICSS India{% endblock %}
+
+{% block content %}
+<!-- Hero Banner -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8 fade-in-left">
+                <h1 class="display-4 mb-3">Our Courses</h1>
+                <p class="lead">Industry-Leading Programs for the Modern Tech Professional</p>
+            </div>
+            <div class="col-md-4 fade-in-right">
+                <div class="text-end">
+                    <i class="fas fa-book-open" style="font-size: 150px; opacity: 0.3;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Course Categories Filter -->
+<section class="py-4 bg-light">
+    <div class="container">
+        <div class="row fade-in-up">
+            <div class="col-md-12">
+                <div class="d-flex flex-wrap justify-content-center gap-3">
+                    <button class="btn btn-primary active" data-filter="all">All Courses</button>
+                    <button class="btn btn-outline-primary" data-filter="ai">Artificial Intelligence</button>
+                    <button class="btn btn-outline-primary" data-filter="security">Cyber Security</button>
+                    <button class="btn btn-outline-primary" data-filter="cloud">Cloud Computing</button>
+                    <button class="btn btn-outline-primary" data-filter="data">Data Science</button>
+                    <button class="btn btn-outline-primary" data-filter="web">Web Development</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            {% for course in courses %}
+            <div class="col-md-4 fade-in-up stagger-{{ loop.index % 6 + 1 }}">
+                <div class="card course-card h-100 shadow-sm">
+                    <div class="course-image">
+                        <img src="../static/files/course-{{ loop.index % 3 + 1 }}.webp" alt="{{ course.name }}">
+                        <div class="course-badge">Popular</div>
+                    </div>
+                    <div class="card-body">
+                        <h4>{{ course.name }}</h4>
+                        <p>{{ course.description }}</p>
+                        <div class="mb-3">
+                            <div class="mb-2">
+                                <i class="fas fa-clock text-primary"></i>
+                                <strong>Duration:</strong> {{ course.duration }}
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-user-tie text-primary"></i>
+                                <strong>Instructor:</strong> {{ course.instructor }}
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-rupee-sign text-primary"></i>
+                                <strong>Price:</strong> ₹{{ course.price }}
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <span class="ms-2">(4.8/5)</span>
+                            </div>
+                        </div>
+                        <a href="/course/{{ course.id }}" class="btn btn-primary w-100">View Details <i class="fas fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            
+            <!-- Additional Sample Courses -->
+            <div class="col-md-4 fade-in-up stagger-1">
+                <div class="card course-card h-100 shadow-sm">
+                    <div class="course-image">
+                        <img src="../static/files/course-1.webp" alt="Machine Learning">
+                        <div class="course-badge">New</div>
+                    </div>
+                    <div class="card-body">
+                        <h4>Machine Learning & Deep Learning</h4>
+                        <p>Master ML algorithms, neural networks, and deep learning with TensorFlow and PyTorch</p>
+                        <div class="mb-3">
+                            <div class="mb-2">
+                                <i class="fas fa-clock text-primary"></i>
+                                <strong>Duration:</strong> 12 Weeks
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-user-tie text-primary"></i>
+                                <strong>Instructor:</strong> Dr. Ankit Verma
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-rupee-sign text-primary"></i>
+                                <strong>Price:</strong> ₹45,000
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <span class="ms-2">(4.9/5)</span>
+                            </div>
+                        </div>
+                        <a href="/course/ml-deeplearning" class="btn btn-primary w-100">View Details <i class="fas fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 fade-in-up stagger-2">
+                <div class="card course-card h-100 shadow-sm">
+                    <div class="course-image">
+                        <img src="../static/files/course-2.webp" alt="Blockchain">
+                        <div class="course-badge">Trending</div>
+                    </div>
+                    <div class="card-body">
+                        <h4>Blockchain & Cryptocurrency</h4>
+                        <p>Learn blockchain technology, smart contracts, and cryptocurrency development</p>
+                        <div class="mb-3">
+                            <div class="mb-2">
+                                <i class="fas fa-clock text-primary"></i>
+                                <strong>Duration:</strong> 10 Weeks
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-user-tie text-primary"></i>
+                                <strong>Instructor:</strong> Rajesh Kumar
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-rupee-sign text-primary"></i>
+                                <strong>Price:</strong> ₹38,000
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star-half-alt text-warning"></i>
+                                <span class="ms-2">(4.7/5)</span>
+                            </div>
+                        </div>
+                        <a href="/course/blockchain" class="btn btn-primary w-100">View Details <i class="fas fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 fade-in-up stagger-3">
+                <div class="card course-card h-100 shadow-sm">
+                    <div class="course-image">
+                        <img src="../static/files/course-3.webp" alt="Python Programming">
+                        <div class="course-badge">Bestseller</div>
+                    </div>
+                    <div class="card-body">
+                        <h4>Python Programming Masterclass</h4>
+                        <p>From basics to advanced Python programming with real-world applications</p>
+                        <div class="mb-3">
+                            <div class="mb-2">
+                                <i class="fas fa-clock text-primary"></i>
+                                <strong>Duration:</strong> 8 Weeks
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-user-tie text-primary"></i>
+                                <strong>Instructor:</strong> Neha Gupta
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-rupee-sign text-primary"></i>
+                                <strong>Price:</strong> ₹25,000
+                            </div>
+                            <div class="mb-2">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <span class="ms-2">(5.0/5)</span>
+                            </div>
+                        </div>
+                        <a href="/course/python" class="btn btn-primary w-100">View Details <i class="fas fa-arrow-right ms-2"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Our Courses -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5 fade-in-up">
+            <h2 class="section-title">Why Choose Our Courses?</h2>
+            <p class="section-subtitle">Everything You Need to Succeed</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-3 fade-in-up">
+                <div class="card h-100 text-center p-4">
+                    <i class="fas fa-video fa-3x text-primary mb-3"></i>
+                    <h5>HD Video Lectures</h5>
+                    <p>High-quality video content accessible anytime, anywhere</p>
+                </div>
+            </div>
+            <div class="col-md-3 fade-in-up stagger-2">
+                <div class="card h-100 text-center p-4">
+                    <i class="fas fa-file-alt fa-3x text-primary mb-3"></i>
+                    <h5>Course Materials</h5>
+                    <p>Comprehensive study materials and resources</p>
+                </div>
+            </div>
+            <div class="col-md-3 fade-in-up stagger-3">
+                <div class="card h-100 text-center p-4">
+                    <i class="fas fa-project-diagram fa-3x text-primary mb-3"></i>
+                    <h5>Live Projects</h5>
+                    <p>Work on real-world industry projects</p>
+                </div>
+            </div>
+            <div class="col-md-3 fade-in-up stagger-4">
+                <div class="card h-100 text-center p-4">
+                    <i class="fas fa-headset fa-3x text-primary mb-3"></i>
+                    <h5>24/7 Support</h5>
+                    <p>Round-the-clock student support</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container text-center fade-in-up">
+        <h2 class="mb-4">Can't Find What You're Looking For?</h2>
+        <p class="lead mb-4">Talk to our course advisors for personalized recommendations</p>
+        <a href="/contact" class="btn btn-hero btn-lg">Contact Us <i class="fas fa-arrow-right ms-2"></i></a>
+    </div>
+</section>
+{% endblock %}
